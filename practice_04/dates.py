@@ -43,3 +43,4 @@ diff = date2 - date1
 
 seconds = diff.total_seconds()
 print("Difference in seconds:", seconds)
+

@@ -27,6 +27,7 @@ N=int(input())
 for num in check(N):
     print(num, end=" ")
 
+
 #task number 4
 def squares(a,b):
     for i in range(a,b+1):
@@ -34,6 +35,7 @@ def squares(a,b):
 a,b=map(int, input().split())
 for num in squares(a,b):
     print(num)
+
 
 #task number 5
 def reversion(N):
