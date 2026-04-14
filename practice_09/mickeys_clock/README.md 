@@ -1,0 +1,14 @@
+# Mickey's Clock
+
+This project is a Mickey Mouse clock made with Pygame.
+
+## Features
+- Shows current system time
+- Uses Mickey's hands as clock hands
+- Right hand = minutes
+- Left hand = seconds
+- Updates every second in real time
+
+## Run
+```bash
+python main.py
