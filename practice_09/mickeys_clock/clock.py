@@ -1,65 +1,53 @@
 import pygame
-import math
-from datetime import datetime
-
+import datetime
+import os
 
 class MickeyClock:
-    def __init__(self, screen, width, height):
-        self.screen = screen
-        self.width = width
-        self.height = height
-        self.center = (width // 2, height // 2)
+    def __init__(self, screen_width, screen_height):
+        self.screen_size = (screen_width, screen_height)
+        self.center = (screen_width // 2, screen_height // 2)
 
-        self.face = pygame.image.load("images/clock_face.png").convert_alpha()
-        self.face = pygame.transform.smoothscale(self.face, (700, 700))
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        img_dir = os.path.join(base_dir, "images")
 
-        self.right_hand = pygame.image.load("images/right_hand.png").convert_alpha()
-        self.left_hand = pygame.image.load("images/left_hand.png").convert_alpha()
+        self.bg = pygame.image.load(os.path.join(img_dir, "clock.png")).convert()
+        self.bg = pygame.transform.scale(self.bg, self.screen_size)
 
-        self.right_hand = pygame.transform.smoothscale(self.right_hand, (220, 80))
-        self.left_hand = pygame.transform.smoothscale(self.left_hand, (220, 80))
+        self.mickey_body = pygame.image.load(os.path.join(img_dir, "mickey.png")).convert_alpha()
+        self.mickey_body = pygame.transform.scale(self.mickey_body, (380, 500))
+        self.mickey_rect = self.mickey_body.get_rect(center=self.center)
 
-        self.minute_angle = 0
-        self.second_angle = 0
+        self.min_hand_orig = pygame.image.load(os.path.join(img_dir, "hand_right_centered.png")).convert_alpha()
+        self.min_hand_orig = pygame.transform.scale(self.min_hand_orig, (200, 300))
 
-    def update(self):
-        now = datetime.now()
-        minutes = now.minute
-        seconds = now.second
+        self.sec_hand_orig = pygame.image.load(os.path.join(img_dir, "hand_left_centered.png")).convert_alpha()
+        self.sec_hand_orig = pygame.transform.scale(self.sec_hand_orig, (190, 280))
 
-        self.minute_angle = -(minutes * 6)
-        self.second_angle = -(seconds * 6)
+    def blit_rotate_pivot(self, surface, image, pos, origin_pos, angle):
+        image_rect = image.get_rect(topleft=(pos[0] - origin_pos[0], pos[1] - origin_pos[1]))
+        offset_center_to_pivot = pygame.math.Vector2(pos) - image_rect.center
+        rotated_offset = offset_center_to_pivot.rotate(-angle)
+        rotated_image_center = (pos[0] - rotated_offset.x, pos[1] - rotated_offset.y)
 
-    def rotate_hand(self, image, angle, pivot, offset):
         rotated_image = pygame.transform.rotate(image, angle)
-        rotated_offset = offset.rotate(-angle)
-        rect = rotated_image.get_rect(center=(pivot[0] + rotated_offset.x, pivot[1] + rotated_offset.y))
-        return rotated_image, rect
+        rotated_image_rect = rotated_image.get_rect(center=rotated_image_center)
 
-    def draw(self):
-        self.screen.fill((240, 240, 240))
+        surface.blit(rotated_image, rotated_image_rect)
 
-        face_rect = self.face.get_rect(center=self.center)
-        self.screen.blit(self.face, face_rect)
+    def render(self, surface):
+        surface.blit(self.bg, (0, 0))
+        surface.blit(self.mickey_body, self.mickey_rect.topleft)
 
-        pivot = self.center
+        now = datetime.datetime.now()
 
-        minute_offset = pygame.math.Vector2(70, -20)
-        second_offset = pygame.math.Vector2(-70, -20)
+        min_angle = -(now.minute * 6)
+        sec_angle = -(now.second * 6)
 
-        minute_img, minute_rect = self.rotate_hand(
-            self.right_hand,
-            self.minute_angle,
-            pivot,
-            minute_offset
-        )
+        min_pivot_x = self.min_hand_orig.get_width() // 2
+        min_pivot_y = self.min_hand_orig.get_height()
 
-        second_img, second_rect = self.rotate_hand(
-            self.left_hand,
-            self.second_angle,
-            pivot,
-            second_offset
-        )
+        sec_pivot_x = self.sec_hand_orig.get_width() // 2
+        sec_pivot_y = self.sec_hand_orig.get_height()
 
-        self.screen.blit(second_img, second_rect)
-        self.screen.blit(minute_img, minute_rect)
+        self.blit_rotate_pivot(surface, self.min_hand_orig, self.center, (min_pivot_x, min_pivot_y), min_angle)
+        self.blit_rotate_pivot(surface, self.sec_hand_orig, self.center, (sec_pivot_x, sec_pivot_y), sec_angle)
