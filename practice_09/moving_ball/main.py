@@ -29,7 +29,7 @@ def main():
                 elif event.key == pygame.K_RIGHT:
                     ball.move(1, 0)
 
-        screen.fill((255, 255, 255))  # белый фон
+        screen.fill((255, 255, 255))  
         ball.draw(screen)
 
         pygame.display.flip()

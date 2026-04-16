@@ -6,7 +6,7 @@ class Ball:
         self.x = x
         self.y = y
         self.radius = radius
-        self.speed = 20
+        self.speed = 40
 
         self.screen_width = screen_width
         self.screen_height = screen_height
@@ -22,4 +22,5 @@ class Ball:
             self.y = new_y
 
     def draw(self, screen):
-        pygame.draw.circle(screen, (255, 0, 0), (self.x, self.y), self.radius)
+        pygame.draw.rect(screen, (255, 0, 0), (self.x, self.y, self.radius, self.radius))
+
